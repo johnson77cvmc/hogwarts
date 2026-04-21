@@ -1089,6 +1089,7 @@
       audioCtx: null,
       lastAhTime: 0,
       lastVoiceTime: 0,
+      dracoFinalOverlayShown: false,
     };
 
     const stepsMeta = ["錄取信", "採購", "月台", "分類帽", "跩哥", "魁地奇", "學期結束"];
@@ -1265,13 +1266,13 @@
     const stageStories = {
       shopping: [
         { speaker: '旁白', text: '住在姨媽家樓梯底下的 {name}，某一天忽然被一個高大的男人找上門......。', visual: '✨' },
-        { speaker: '海格', text: '{name}，你是魔法師阿；霍格華茲是世上最好的魔法學校；我是來帶你走的~', actions: [{ label: '出發!', next: 2, kind: 'primary' }], visual: '🧳' },
-        { speaker: '海格', text: '去霍格華茲之前，我們要先去Shopping。', visual: '🛍️' },
+        { speaker: '海格', text: '{name}，你是魔法師阿；霍格華茲是世上最好的魔法學校；我是來帶你走的~', actions: [{ label: '出發!', next: 2, kind: 'primary' }], visual: 'hagrid.jpg' },
+        { speaker: '海格', text: '去霍格華茲之前，我們要先去Shopping。', visual: 'hagrid.jpg' },
         { speaker: '旁白', text: '抵達斜角巷。', visual: '斜角巷' }
       ],
       platform: [
-        { speaker: '海格', text: '{name}，拿好你的票。', visual: '🎫' },
-        { speaker: () => playerName(), text: '這一定是弄錯了，上面寫著九又四分之三月台，根本沒有這種月台，對吧?', visual: '🚉' },
+        { speaker: '海格', text: '{name}，拿好你的票。', visual: 'hagrid.jpg' },
+        { speaker: () => playerName(), text: '這一定是弄錯了，上面寫著九又四分之三月台，根本沒有這種月台，對吧?', visual: '__PLAYER_TEXT__' },
         { speaker: '旁白', text: '（海格不見了）', visual: '霧中的車站' }
       ],
       sorting: [
@@ -1310,7 +1311,19 @@
         return;
       }
       storySpeaker.textContent = typeof scene.speaker === 'function' ? scene.speaker() : scene.speaker;
-      storyVisual.textContent = withPlayerName(scene.visual || '✨');
+      storyVisual.innerHTML = '';
+      const visualValue = withPlayerName(scene.visual || '✨');
+      if (visualValue === '__PLAYER_TEXT__') {
+        storyVisual.innerHTML = `
+          <div style="max-width:520px; line-height:1.9; font-size:24px; color:#fff2ca; letter-spacing:0; text-align:center;">
+            這裡沒有您的照片，<br>如果好奇，請自己尋找一面鏡子照照看。
+          </div>
+        `;
+      } else if (/\.(jpg|jpeg|png|webp|gif)$/i.test(visualValue)) {
+        storyVisual.innerHTML = `<img src="${visualValue}" alt="${storySpeaker.textContent}">`;
+      } else {
+        storyVisual.textContent = visualValue;
+      }
       typeStageStoryText(withPlayerName(scene.text));
       storyActions.innerHTML = '';
       const actions = scene.actions || [{ label: '下一幕', next: state.storySceneIndex + 1, kind: 'primary' }];
@@ -1677,6 +1690,7 @@
     coinButton.addEventListener('click', () => {
       const total = currentTotalCost();
       if (!state.paymentStarted || state.paidAmount >= total) return;
+      playCoinSound();
       state.paidAmount += 1;
       if (state.paidAmount > total) state.paidAmount = total;
       renderPaymentPanel();
@@ -1697,6 +1711,7 @@
       { text: '{name}，你成功讓跩哥閉嘴了，但遲早他會回來的......。', image: 'Draco Malfoy scary.jpg', sceneClass: '', actions: [{ label: '前往魁地奇', next: 'quidditch', kind: 'primary' }] }
     ];
 
+    
     function ensureAudioContext() {
       if (!state.audioCtx) {
         const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -1705,97 +1720,41 @@
       if (state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
     }
 
-    function playKidAh(intensity = 1) {
-      ensureAudioContext();
-      if (!state.audioCtx) return;
-      const ctx = state.audioCtx;
-      const now = ctx.currentTime;
+    const dracoAhSrc = 'ah_short_optimized.mp3';
 
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const vibrato = ctx.createOscillator();
-      const vibratoGain = ctx.createGain();
-
-      osc.type = 'triangle';
-      vibrato.type = 'sine';
-
-      const baseFreq = 720 + Math.random() * 140 + intensity * 40;
-
-      osc.frequency.setValueAtTime(baseFreq, now);
-      osc.frequency.exponentialRampToValueAtTime(baseFreq * (1.18 + Math.random() * 0.08), now + 0.05);
-      osc.frequency.exponentialRampToValueAtTime(baseFreq * (0.92 + Math.random() * 0.06), now + 0.13);
-
-      vibrato.frequency.setValueAtTime(18 + Math.random() * 8, now);
-      vibratoGain.gain.setValueAtTime(18 + intensity * 4, now);
-
-      vibrato.connect(vibratoGain);
-      vibratoGain.connect(osc.frequency);
-
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.14 + intensity * 0.03, now + 0.012);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      vibrato.start(now);
-      osc.start(now);
-
-      osc.stop(now + 0.17);
-      vibrato.stop(now + 0.17);
+    function playAudioClip(src, volume = 1) {
+      const audio = new Audio(src);
+      audio.volume = volume;
+      audio.play().catch(() => {});
+      audio.addEventListener('ended', () => {
+        audio.src = '';
+      });
     }
 
-    function playKidVoiceLine(kind = 'stop') {
+    function playCoinSound() {
       ensureAudioContext();
       if (!state.audioCtx) return;
       const ctx = state.audioCtx;
       const now = ctx.currentTime;
-
-      const presets = {
-        stop: [
-          [560, 0.00, 0.055, 0.075],
-          [690, 0.05, 0.055, 0.078],
-          [610, 0.10, 0.055, 0.082],
-          [760, 0.15, 0.07, 0.088]
-        ],
-        pain: [
-          [760, 0.00, 0.045, 0.09],
-          [880, 0.04, 0.05, 0.1],
-          [720, 0.08, 0.06, 0.095]
-        ]
-      };
-
-      (presets[kind] || presets.stop).forEach(([freq, startOffset, dur, amp], i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const vibrato = ctx.createOscillator();
-        const vibratoGain = ctx.createGain();
-        const start = now + startOffset;
-        const end = start + dur;
-
-        osc.type = i % 2 === 0 ? 'triangle' : 'sawtooth';
-        vibrato.type = 'sine';
-        osc.frequency.setValueAtTime(freq + Math.random() * 35, start);
-        osc.frequency.exponentialRampToValueAtTime(freq * (1.14 + Math.random() * 0.05), start + dur * 0.35);
-        osc.frequency.exponentialRampToValueAtTime(freq * (0.88 + Math.random() * 0.05), end);
-
-        vibrato.frequency.setValueAtTime(22 + Math.random() * 8, start);
-        vibratoGain.gain.setValueAtTime(13 + Math.random() * 5, start);
-
-        gain.gain.setValueAtTime(0.0001, start);
-        gain.gain.exponentialRampToValueAtTime(amp + i * 0.01, start + 0.008);
-        gain.gain.exponentialRampToValueAtTime(0.001, end);
-
-        vibrato.connect(vibratoGain);
-        vibratoGain.connect(osc.frequency);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        vibrato.start(start);
-        osc.start(start);
-        osc.stop(end);
-        vibrato.stop(end);
-      });
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc1.type = 'triangle';
+      osc2.type = 'sine';
+      osc1.frequency.setValueAtTime(1680, now);
+      osc1.frequency.exponentialRampToValueAtTime(1180, now + 0.08);
+      osc2.frequency.setValueAtTime(2480, now);
+      osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.12);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.16, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.18);
+      osc2.stop(now + 0.18);
     }
 
     function playSlapSound() {
@@ -1821,54 +1780,37 @@
       slapOsc.start(now);
       slapOsc.stop(now + 0.12);
 
-      const yellOsc = ctx.createOscillator();
-      const yellGain = ctx.createGain();
-      const yellFilter = ctx.createBiquadFilter();
-      yellOsc.type = 'sawtooth';
-      yellOsc.frequency.setValueAtTime(860, now + 0.006);
-      yellOsc.frequency.exponentialRampToValueAtTime(340, now + 0.16);
-      yellFilter.type = 'bandpass';
-      yellFilter.frequency.value = 1450;
-      yellFilter.Q.value = 1.2;
-      yellGain.gain.setValueAtTime(0.0001, now + 0.006);
-      yellGain.gain.exponentialRampToValueAtTime(0.11, now + 0.03);
-      yellGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.17);
-      yellOsc.connect(yellFilter);
-      yellFilter.connect(yellGain);
-      yellGain.connect(ctx.destination);
-      yellOsc.start(now + 0.006);
-      yellOsc.stop(now + 0.18);
-
-      const perfNow = performance.now();
       const count = state.dracoSlapCount;
-
-      if (count >= 75) {
-        if (perfNow - state.lastAhTime >= 58) {
-          state.lastAhTime = perfNow;
-          playKidAh(1.15 + count / 120);
-        }
-        if (count >= 90 && perfNow - state.lastVoiceTime >= 185) {
-          state.lastVoiceTime = perfNow;
-          playKidVoiceLine('pain');
-        }
-        return;
+      if (count >= 50) {
+        playAudioClip(dracoAhSrc, 0.95);
+      } else if (count % 10 === 0) {
+        playAudioClip(dracoAhSrc, 0.85);
       }
+    }
 
-      if (count >= 55) {
-        if (count % 5 === 0 && perfNow - state.lastVoiceTime >= 210) {
-          state.lastVoiceTime = perfNow;
-          playKidVoiceLine(count >= 65 ? 'pain' : 'stop');
-        } else if (perfNow - state.lastAhTime >= 95) {
-          state.lastAhTime = perfNow;
-          playKidAh(0.92 + count / 180);
-        }
-        return;
-      }
-
-      if (count % 5 === 0 && perfNow - state.lastVoiceTime >= 240) {
-        state.lastVoiceTime = perfNow;
-        playKidVoiceLine('stop');
-      }
+    function showDracoFinalLineAndAdvance() {
+      if (state.dracoFinalOverlayShown) return;
+      state.dracoFinalOverlayShown = true;
+      const box = document.createElement('div');
+      box.style.position = 'fixed';
+      box.style.left = '50%';
+      box.style.bottom = '18%';
+      box.style.transform = 'translateX(-50%)';
+      box.style.zIndex = '9999';
+      box.style.padding = '18px 30px';
+      box.style.borderRadius = '18px';
+      box.style.background = 'rgba(0,0,0,0.84)';
+      box.style.border = '1px solid rgba(255,255,255,0.12)';
+      box.style.boxShadow = '0 20px 50px rgba(0,0,0,0.35)';
+      box.style.fontSize = '30px';
+      box.style.color = '#fff0cf';
+      box.textContent = '我還會回來的!';
+      document.body.appendChild(box);
+      setTimeout(() => {
+        box.remove();
+        state.dracoFinalOverlayShown = false;
+        goDracoScene(4);
+      }, 1500);
     }
 
     function stopDracoTyping() {
@@ -1943,14 +1885,33 @@
           if (state.dracoSlapCount >= 100) return;
           state.dracoSlapCount += 1;
           updateDracoSlapMeter();
-          if (state.dracoSlapCount >= 72 && dracoPortrait.getAttribute('src') !== 'Draco Malfoy scary.jpg') {
+          if (state.dracoSlapCount >= 50 && dracoPortrait.getAttribute('src') !== 'Draco Malfoy scary.jpg') {
             dracoPortrait.src = 'Draco Malfoy scary.jpg';
           }
           animateSlap();
           playSlapSound();
+
+          if (state.dracoSlapCount >= 60) {
+            document.body.style.background = '#2b0d0d';
+          }
+          if (state.dracoSlapCount >= 70) {
+            document.body.style.background = '#3a0d0d';
+          }
+          if (state.dracoSlapCount >= 80) {
+            document.body.style.background = '#4a0d0d';
+          }
+          if (state.dracoSlapCount >= 90) {
+            document.body.style.background = '#5a0d0d';
+          }
+
+          if (state.dracoSlapCount >= 60) {
+            document.body.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
+            setTimeout(() => { document.body.style.transform = 'none'; }, 50);
+          }
+
           if (state.dracoSlapCount >= 100) {
             slapBtn.disabled = true;
-            setTimeout(() => goDracoScene(4), 280);
+            showDracoFinalLineAndAdvance();
           }
         });
         dracoActions.appendChild(slapBtn);
@@ -1994,6 +1955,12 @@
 
       if (scene.slapMode) {
         state.dracoSlapCount = 0;
+        state.lastAhTime = 0;
+        state.lastVoiceTime = 0;
+        state.dracoFinalOverlayShown = false;
+        document.body.style.background = '';
+        document.body.style.filter = '';
+        document.body.style.transform = 'none';
         updateDracoSlapMeter();
       }
 
@@ -2004,6 +1971,12 @@
     function startDracoScene() {
       state.dracoSceneIndex = 0;
       state.dracoSlapCount = 0;
+      state.lastAhTime = 0;
+      state.lastVoiceTime = 0;
+      state.dracoFinalOverlayShown = false;
+      document.body.style.background = '';
+      document.body.style.filter = '';
+      document.body.style.transform = 'none';
       goToStep(4);
       renderDracoScene();
     }
