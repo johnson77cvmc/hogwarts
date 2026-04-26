@@ -767,6 +767,254 @@
       color: var(--muted);
     }
 
+
+    .magic-pass-row {
+      display: flex;
+      align-items: center;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    .magic-prefix {
+      padding: 16px 0 16px 18px;
+      color: rgba(255,255,255,0.62);
+      font-size: 17px;
+      white-space: nowrap;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .magic-pass-row input {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding-left: 4px;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+    .magic-pass-row:focus-within {
+      border-color: rgba(255,221,149,0.55);
+      box-shadow: 0 0 0 4px rgba(255,221,149,0.08);
+    }
+
+    .magic-glow {
+      animation: glowPulse 1.25s infinite alternate;
+      border-color: rgba(255,221,149,0.5) !important;
+      background: rgba(255,221,149,0.13) !important;
+    }
+    @keyframes glowPulse {
+      from { box-shadow: 0 0 0 rgba(255,221,149,0.16); }
+      to {
+        box-shadow:
+          0 0 20px rgba(255,221,149,0.78),
+          0 0 48px rgba(255,221,149,0.34);
+      }
+    }
+    .magic-star {
+      position: fixed;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #ffe39b;
+      pointer-events: none;
+      z-index: 9998;
+      box-shadow: 0 0 12px rgba(255,221,149,0.82);
+      animation: starBurst 1.2s ease-out forwards;
+    }
+    @keyframes starBurst {
+      0% { opacity: 1; transform: translate(0, 0) scale(0.35); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.8); }
+    }
+    .magic-transition {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, rgba(255,242,190,0.98) 0%, rgba(255,221,149,0.48) 28%, rgba(10,8,24,0.96) 78%);
+      animation: magicFlash 1.35s ease-in-out forwards;
+    }
+    .magic-transition::after {
+      content: "歡迎來到霍格華茲";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff5d6;
+      font-size: clamp(28px, 5vw, 64px);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-shadow: 0 0 22px rgba(255,221,149,0.72);
+    }
+    @keyframes magicFlash {
+      0% { opacity: 0; transform: scale(0.92); filter: blur(12px); }
+      32% { opacity: 1; transform: scale(1.02); filter: blur(0); }
+      78% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.08); }
+    }
+
+    .hagrid-entrance {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at center, rgba(255,221,149,0.10), transparent 34%),
+        linear-gradient(180deg, rgba(5,8,18,0.98), rgba(13,10,25,0.98));
+      overflow: hidden;
+    }
+    .hagrid-entrance.show { display: flex; }
+    .hagrid-fog {
+      position: absolute;
+      inset: -20%;
+      background:
+        radial-gradient(circle at 20% 40%, rgba(255,255,255,0.12), transparent 26%),
+        radial-gradient(circle at 70% 55%, rgba(255,255,255,0.10), transparent 28%),
+        radial-gradient(circle at 52% 72%, rgba(255,255,255,0.09), transparent 30%);
+      filter: blur(20px);
+      opacity: 0;
+      animation: fogRoll 3.4s ease-in-out forwards;
+    }
+    @keyframes fogRoll {
+      0% { opacity: 0; transform: translateX(-8%) scale(1.05); }
+      35% { opacity: 0.78; }
+      100% { opacity: 0.48; transform: translateX(8%) scale(1.15); }
+    }
+    .hagrid-card {
+      position: relative;
+      z-index: 2;
+      width: min(720px, 92vw);
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.86) translateY(28px);
+      filter: blur(16px);
+      animation: hagridReveal 2.35s ease-out forwards;
+      animation-delay: 0.35s;
+    }
+    @keyframes hagridReveal {
+      0% { opacity: 0; transform: scale(0.86) translateY(28px); filter: blur(16px); }
+      58% { opacity: 1; filter: blur(3px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    }
+    .hagrid-card img {
+      width: min(420px, 84vw);
+      max-height: 360px;
+      object-fit: contain;
+      border-radius: 28px;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.45);
+      background: rgba(255,255,255,0.04);
+    }
+    .hagrid-subtitle {
+      margin: 22px auto 0;
+      min-height: 54px;
+      color: #fff3cf;
+      font-size: clamp(24px, 4vw, 42px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 24px rgba(255,221,149,0.64);
+    }
+
+
+    /* === 強制可見特效測試版 === */
+    .magic-glow {
+      animation: strongGlowPulse 0.7s infinite alternate !important;
+      background: rgba(255,221,149,0.28) !important;
+      border-color: rgba(255,221,149,0.9) !important;
+      color: #fff8dc !important;
+      transform: scale(1.015);
+    }
+    @keyframes strongGlowPulse {
+      from {
+        box-shadow:
+          0 0 12px rgba(255,221,149,0.65),
+          inset 0 0 10px rgba(255,221,149,0.18);
+      }
+      to {
+        box-shadow:
+          0 0 42px rgba(255,221,149,1),
+          0 0 90px rgba(255,221,149,0.68),
+          inset 0 0 20px rgba(255,221,149,0.28);
+      }
+    }
+    .magic-star {
+      position: fixed !important;
+      width: 10px !important;
+      height: 10px !important;
+      border-radius: 999px !important;
+      background: #ffe39b !important;
+      pointer-events: none !important;
+      z-index: 2147483646 !important;
+      box-shadow:
+        0 0 12px rgba(255,221,149,1),
+        0 0 26px rgba(255,221,149,0.75) !important;
+      animation: strongStarBurst 1.4s ease-out forwards !important;
+    }
+    .magic-star::after {
+      content: "✦";
+      position: absolute;
+      left: -6px;
+      top: -12px;
+      color: #fff2b8;
+      font-size: 20px;
+      text-shadow: 0 0 16px rgba(255,221,149,1);
+    }
+    @keyframes strongStarBurst {
+      0% { opacity: 1; transform: translate(0, 0) scale(0.5) rotate(0deg); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(2.1) rotate(180deg); }
+    }
+    .magic-transition {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 2147483647 !important;
+      pointer-events: none !important;
+      background:
+        radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(255,230,150,0.94) 22%, rgba(120,70,255,0.55) 54%, rgba(5,8,25,0.98) 100%) !important;
+      animation: strongMagicFlash 1.8s ease-in-out forwards !important;
+    }
+    .magic-transition::after {
+      content: "歡迎來到霍格華茲";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff8d8;
+      font-size: clamp(32px, 6vw, 76px);
+      font-weight: 900;
+      letter-spacing: 0.13em;
+      text-shadow:
+        0 0 20px rgba(255,221,149,1),
+        0 0 52px rgba(255,221,149,0.8);
+      animation: transitionTextPulse 1.8s ease-in-out forwards;
+    }
+    @keyframes transitionTextPulse {
+      0% { opacity: 0; transform: scale(0.82); }
+      35% { opacity: 1; transform: scale(1.05); }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.14); }
+    }
+    @keyframes strongMagicFlash {
+      0% { opacity: 0; filter: blur(16px); transform: scale(0.9); }
+      22% { opacity: 1; filter: blur(0); transform: scale(1); }
+      72% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.08); }
+    }
+    .magic-test-btn {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9997;
+      border: 1px solid rgba(255,221,149,0.45);
+      background: rgba(255,221,149,0.14);
+      color: #fff4cf;
+      border-radius: 999px;
+      padding: 12px 16px;
+      box-shadow: 0 0 24px rgba(255,221,149,0.2);
+    }
+
     @media (max-width: 980px) {
       body { padding: 14px; }
       .header, .app-shell { padding: 18px; }
@@ -816,8 +1064,8 @@
             <div class="fold-box" id="foldBox">
               <div class="magic-hint" style="margin-top:0;">
                 <strong>Magic Pass 線索：</strong><br>
-                你的入學識別碼格式為 <strong>HP-2026-XXXX</strong>。<br>
-                <strong>XXXX 的線索請於您的入學信封中尋找。</strong>
+                你的入學識別碼格式為 <strong>HP-2026-生日四碼</strong>。<br>
+                <strong>請在 HP-2026- 後面填入你的生日，例如 2 月 30 日就是 0230。</strong>
               </div>
             </div>
           </div>
@@ -833,11 +1081,16 @@
             </div>
             <div class="field">
               <label for="magicCode">Magic Pass</label>
-              <input id="magicCode" placeholder="HP-2026-XXXX" />
+              <div class="magic-pass-row">
+                <span class="magic-prefix">HP-2026-</span>
+                <input id="magicCode" inputmode="numeric" maxlength="4" placeholder="MMDD" aria-label="Magic Pass 後四碼" />
+              </div>
             </div>
-            <div class="hint-box">
-              正確的 Magic Pass 才能進入霍格華茲。<br>
-              <strong>XXXX 的線索請於您的入學信封中尋找。</strong>
+            <div class="hint-box" id="magicHint">
+              霍格華茲不會隨便讓人進入。<br><br>
+              你的 Magic Pass，<br>
+              已經寫在錄取信裡了。<br><br>
+              去找出它。
             </div>
             <div class="warn-box" id="admissionWarn"></div>
             <div class="btn-row">
@@ -900,7 +1153,7 @@
             <div class="hat-box">
             <div class="tag">分類帽</div>
             <div class="hat">
-              <img src="Sorting_Hat.jpg" alt="分類帽">
+              <img src="https://raw.githubusercontent.com/johnson77cvmc/hogwarts-admission-experience/main/Sorting_Hat.jpg?v=20260426" alt="分類帽">
             </div>
             <p class="muted">「嗯……很有趣。你的選擇，會透露你真正屬於哪裡。」</p>
             </div>
@@ -1036,6 +1289,16 @@
     </main>
   </div>
 
+
+  <div class="hagrid-entrance" id="hagridEntrance">
+    <div class="hagrid-fog"></div>
+    <div class="hagrid-card">
+      <img src="https://raw.githubusercontent.com/johnson77cvmc/hogwarts-admission-experience/main/hagrid.jpg?v=20260426" alt="海格">
+      <div class="hagrid-subtitle" id="hagridSubtitle"></div>
+    </div>
+  </div>
+
+
   <div class="story-overlay" id="storyOverlay">
     <div class="story-modal">
       <div class="story-visual" id="storyVisual"></div>
@@ -1048,7 +1311,17 @@
   </div>
 
   <script>
-    const VALID_MAGIC_PASS = "HP-2026-1013";
+    const MAGIC_PASS_PREFIX = "HP-2026-";
+    const ASSET_BASE = "https://raw.githubusercontent.com/johnson77cvmc/hogwarts-admission-experience/main/";
+    const ASSET_VERSION = "v=20260426";
+
+    function assetSrc(fileName) {
+      if (!fileName) return "";
+      if (/^https?:\/\//i.test(fileName)) return fileName;
+      return ASSET_BASE + encodeURIComponent(fileName).replace(/%2F/g, "/") + "?" + ASSET_VERSION;
+    }
+
+    const ORIGINAL_BODY_BACKGROUND = document.body.style.background;
 
     const state = {
       step: 0,
@@ -1169,6 +1442,7 @@
     const userNameInput = document.getElementById('userName');
     const magicCodeInput = document.getElementById('magicCode');
     const admissionWarn = document.getElementById('admissionWarn');
+    const magicHint = document.getElementById('magicHint');
     const questionCount = document.getElementById('questionCount');
     const questionTitle = document.getElementById('questionTitle');
     const optionList = document.getElementById('optionList');
@@ -1197,6 +1471,8 @@
     const storySpeaker = document.getElementById('storySpeaker');
     const storyText = document.getElementById('storyText');
     const storyActions = document.getElementById('storyActions');
+    const hagridEntrance = document.getElementById('hagridEntrance');
+    const hagridSubtitle = document.getElementById('hagridSubtitle');
     const totalCostEl = document.getElementById('totalCost');
     const paidAmountEl = document.getElementById('paidAmount');
     const paymentSummary = document.getElementById('paymentSummary');
@@ -1320,7 +1596,7 @@
           </div>
         `;
       } else if (/\.(jpg|jpeg|png|webp|gif)$/i.test(visualValue)) {
-        storyVisual.innerHTML = `<img src="${visualValue}" alt="${storySpeaker.textContent}">`;
+        storyVisual.innerHTML = `<img src="${assetSrc(visualValue)}" alt="${storySpeaker.textContent}" onerror="this.parentElement.textContent = '圖片載入失敗：' + this.getAttribute('data-file');" data-file="${visualValue}">`;
       } else {
         storyVisual.textContent = visualValue;
       }
@@ -1354,7 +1630,7 @@
 
       if (!pet) return '';
       if (pet.image) {
-        return `<img class="carry-thumb" src="${pet.image}" alt="${pet.name}">`;
+        return `<img class="carry-thumb" src="${assetSrc(pet.image)}" alt="${pet.name}">`;
       }
       return `<span class="carry-emoji">${pet.emoji || '✨'}</span>`;
     }
@@ -1389,13 +1665,157 @@
       renderIdentity();
     }
 
+
+    function playSoftMagicSound() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = state.audioCtx || new AudioContext();
+        state.audioCtx = ctx;
+        const now = ctx.currentTime;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.18, now + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.78);
+        gain.connect(ctx.destination);
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+          osc.connect(gain);
+          osc.start(now + idx * 0.08);
+          osc.stop(now + 0.8);
+        });
+      } catch (e) {}
+    }
+
+    function playLowHagridTone() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = state.audioCtx || new AudioContext();
+        state.audioCtx = ctx;
+        const now = ctx.currentTime;
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.2, now + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+        gain.connect(ctx.destination);
+
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(92, now);
+        osc.frequency.exponentialRampToValueAtTime(72, now + 1.55);
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(420, now);
+        osc.connect(filter);
+        filter.connect(gain);
+
+        osc.start(now);
+        osc.stop(now + 1.7);
+      } catch (e) {}
+    }
+
+    function speakHagridLine() {
+      try {
+        const utter = new SpeechSynthesisUtterance("你是個巫師");
+        utter.lang = "zh-TW";
+        utter.rate = 0.72;
+        utter.pitch = 0.55;
+        utter.volume = 1;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utter);
+      } catch (e) {
+        playLowHagridTone();
+      }
+    }
+
+    function spawnMagicParticles(originEl = null, count = 28) {
+      const rect = originEl ? originEl.getBoundingClientRect() : null;
+      const baseX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+      const baseY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'magic-star';
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 50 + Math.random() * 130;
+        star.style.left = `${baseX + (Math.random() - 0.5) * 42}px`;
+        star.style.top = `${baseY + (Math.random() - 0.5) * 26}px`;
+        star.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+        star.style.setProperty('--dy', `${Math.sin(angle) * distance - 44}px`);
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 1300);
+      }
+    }
+
+    function activateMagicHint() {
+      if (!magicHint || magicHint.dataset.activated === 'true') return;
+      magicHint.dataset.activated = 'true';
+      magicHint.innerHTML = '你已經知道該填什麼了。';
+      magicHint.classList.add('magic-glow');
+      forceVisibleMagicParticles(magicHint, 70);
+      forceMagicSound();
+    }
+
+    function typeHagridSubtitle(textToType, done) {
+      let i = 0;
+      hagridSubtitle.textContent = '';
+      const tick = () => {
+        if (i < textToType.length) {
+          hagridSubtitle.textContent += textToType[i];
+          i += 1;
+          setTimeout(tick, 90);
+        } else if (done) {
+          setTimeout(done, 650);
+        }
+      };
+      tick();
+    }
+
+    function playHagridEntrance(afterEntrance) {
+      if (!hagridEntrance) {
+        afterEntrance();
+        return;
+      }
+      hagridEntrance.classList.add('show');
+      hagridSubtitle.textContent = '';
+      playLowHagridTone();
+
+      setTimeout(() => {
+        speakHagridLine();
+        typeHagridSubtitle('你是個巫師。', () => {
+          hagridEntrance.classList.remove('show');
+          afterEntrance();
+        });
+      }, 1550);
+    }
+
+    function playMagicLoginTransition(afterTransition) {
+      playSoftMagicSound();
+      spawnMagicParticles(document.querySelector('.app-shell'), 46);
+      const overlay = document.createElement('div');
+      overlay.className = 'magic-transition';
+      document.body.appendChild(overlay);
+      setTimeout(() => {
+        overlay.remove();
+        playHagridEntrance(afterTransition);
+      }, 1350);
+    }
+
+
     toggleLetterBtn.addEventListener('click', () => {
       const open = foldBox.classList.toggle('open');
       toggleLetterBtn.textContent = open ? '收起信件' : '拆開信件';
+
+      if (!open) {
+        activateMagicHint();
+      }
     });
 
     magicCodeInput.addEventListener('input', () => {
-      magicCodeInput.value = magicCodeInput.value.toUpperCase();
+      magicCodeInput.value = magicCodeInput.value.replace(/\D/g, '').slice(0, 4);
       admissionWarn.classList.remove('show');
     });
     userNameInput.addEventListener('input', () => admissionWarn.classList.remove('show'));
@@ -1405,20 +1825,20 @@
       const code = magicCodeInput.value.trim();
 
       if (!name || !code) {
-        admissionWarn.textContent = "請先寫上您的鼎鼎大名或綽號，並輸入 Magic Pass。";
+        admissionWarn.textContent = "請先寫上您的鼎鼎大名或綽號，並輸入生日四碼作為 Magic Pass。";
         admissionWarn.classList.add('show');
         return;
       }
 
-      if (code !== VALID_MAGIC_PASS) {
-        admissionWarn.textContent = "你這麻瓜！膽敢闖進霍格華茲！";
+      if (!/^\d{4}$/.test(code)) {
+        admissionWarn.textContent = "你這麻瓜！Magic Pass 後四碼要填入生日的四個數字。";
         admissionWarn.classList.add('show');
         return;
       }
 
       admissionWarn.classList.remove('show');
       state.name = name;
-      state.magicCode = code;
+      state.magicCode = MAGIC_PASS_PREFIX + code;
       state.sortingIndex = 0;
       state.selectedOptionHouse = null;
       state.sortingScores = { Gryffindor: 0, Ravenclaw: 0, Hufflepuff: 0, Slytherin: 0 };
@@ -1665,7 +2085,7 @@
         const btn = document.createElement('button');
         btn.className = 'pet-card' + (state.pet?.name === pet.name ? ' active' : '');
         btn.innerHTML = pet.image
-          ? `<img class="pet-photo" src="${pet.image}" alt="${pet.name}"><div>${pet.name}</div><div class="price-line">${pet.price === 0 ? 'FREE' : pet.price + ' 金加隆'}</div>`
+          ? `<img class="pet-photo" src="${assetSrc(pet.image)}" alt="${pet.name}"><div>${pet.name}</div><div class="price-line">${pet.price === 0 ? 'FREE' : pet.price + ' 金加隆'}</div>`
           : `<div class="pet-emoji">${pet.emoji}</div><div>${pet.name}</div><div class="price-line">${pet.price === 0 ? 'FREE' : pet.price + ' 金加隆'}</div>`;
         btn.addEventListener('click', () => {
           state.pet = pet;
@@ -1723,7 +2143,7 @@
     const dracoAhSrc = 'ah_short_optimized.mp3';
 
     function playAudioClip(src, volume = 1) {
-      const audio = new Audio(src);
+      const audio = new Audio(assetSrc(src));
       audio.volume = volume;
       audio.play().catch(() => {});
       audio.addEventListener('ended', () => {
@@ -1886,7 +2306,7 @@
           state.dracoSlapCount += 1;
           updateDracoSlapMeter();
           if (state.dracoSlapCount >= 50 && dracoPortrait.getAttribute('src') !== 'Draco Malfoy scary.jpg') {
-            dracoPortrait.src = 'Draco Malfoy scary.jpg';
+            dracoPortrait.src = assetSrc('Draco Malfoy scary.jpg');
           }
           animateSlap();
           playSlapSound();
@@ -1942,7 +2362,7 @@
       dracoImpact.classList.toggle('hidden', !scene.slapMode);
 
       if (scene.image) {
-        dracoPortrait.src = scene.image;
+        dracoPortrait.src = assetSrc(scene.image);
         dracoPortrait.classList.remove('hidden');
       } else {
         dracoPortrait.removeAttribute('src');
@@ -2105,7 +2525,13 @@
       pitch.querySelectorAll('.ball').forEach(ball => ball.remove());
     }
 
+
+    function resetDracoBackground() {
+      document.body.style.background = ORIGINAL_BODY_BACKGROUND || '';
+    }
+
     function resetGameUI() {
+      resetDracoBackground();
       clearTimeout(state.normalBallTimer);
       clearInterval(state.countTimer);
       clearBalls();
@@ -2217,9 +2643,94 @@
       cursorGlow.style.top = `${e.clientY}px`;
     });
 
+
+    /* === 強制可見特效測試版 JS === */
+    function forceVisibleMagicParticles(originEl = null, count = 60) {
+      const rect = originEl ? originEl.getBoundingClientRect() : null;
+      const baseX = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+      const baseY = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'magic-star';
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 90 + Math.random() * 260;
+        star.style.left = `${baseX}px`;
+        star.style.top = `${baseY}px`;
+        star.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
+        star.style.setProperty('--dy', `${Math.sin(angle) * distance}px`);
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 1500);
+      }
+    }
+
+    function forceMagicSound() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = state.audioCtx || new AudioContext();
+        state.audioCtx = ctx;
+        const now = ctx.currentTime;
+
+        const master = ctx.createGain();
+        master.gain.setValueAtTime(0.0001, now);
+        master.gain.exponentialRampToValueAtTime(0.22, now + 0.04);
+        master.gain.exponentialRampToValueAtTime(0.0001, now + 1.05);
+        master.connect(ctx.destination);
+
+        [392, 523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          osc.type = idx % 2 ? 'triangle' : 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.055);
+          osc.connect(master);
+          osc.start(now + idx * 0.055);
+          osc.stop(now + 1.1);
+        });
+      } catch (e) {}
+    }
+
+    function forceMagicTransition(afterTransition) {
+      forceMagicSound();
+      forceVisibleMagicParticles(document.querySelector('.app-shell'), 80);
+
+      const overlay = document.createElement('div');
+      overlay.className = 'magic-transition';
+      document.body.appendChild(overlay);
+
+      setTimeout(() => {
+        overlay.remove();
+        if (typeof playHagridEntrance === 'function') {
+          playHagridEntrance(afterTransition);
+        } else {
+          afterTransition();
+        }
+      }, 1800);
+    }
+
+    // 覆蓋原本函式，讓效果更明顯
+    if (typeof window !== 'undefined') {
+      window.spawnMagicParticles = forceVisibleMagicParticles;
+    }
+
+    const magicTestBtn = document.getElementById('magicTestBtn');
+    if (magicTestBtn) {
+      magicTestBtn.addEventListener('click', () => {
+        const target = document.getElementById('magicHint') || document.querySelector('.app-shell');
+        if (target) target.classList.add('magic-glow');
+        forceVisibleMagicParticles(target, 70);
+        forceMagicSound();
+
+        const overlay = document.createElement('div');
+        overlay.className = 'magic-transition';
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.remove(), 1800);
+      });
+    }
+
     createStars();
     renderProgress();
     renderIdentity();
   </script>
+
+  
 </body>
 </html>
